@@ -1266,6 +1266,9 @@ function sendHaifaEvents(id, name, text, haifaEventsSheet){
 
 function updateEventCategory(id, name, text, haifaEventsSheet){
   set(id, name, null,text); //set only reg2
+  sendKey(id, "WooHoo - it's " + text + " time!")
+  // }
+
 }
 //Mor_
 

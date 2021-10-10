@@ -273,11 +273,31 @@ var statsKeyboard = [
   [{ text: mainMenu}]
 ]
 
-//Mor
-var HaifaEvents_fields = ["Party","Concert / Show","Standup","Lecture","Sport Event","Other Fun"];
+// //Mor
+// var HaifaEvents_fields = ["Party","Concert / Show","Standup","Lecture","Sport Event","Other Fun"];
+// var HaifaEventsBoard = [
+//   [ { text: HaifaEvents_fields[0]}, { text: HaifaEvents_fields[1]}],
+//   [ { text: HaifaEvents_fields[2]}, { text: HaifaEvents_fields[3]}],
+//   [ { text: HaifaEvents_fields[4]}, { text: HaifaEvents_fields[5]}],
+//   [{ text: mainMenu}]
+// ]
+
+/**
+ * object that saves the fields in the HaifaEvents inline keyboard
+ */
+//Mor_
+const HaifaEventsInlinefields = {
+  party : "Party", 
+  concert : "Concert / Show",
+  standup : "Standup",
+  lecture : "Lecture", 
+  sport : "Sport Event",
+  other : "Other Fun", 
+  main_menu : "Main Menu"
+}
 var HaifaEventsBoard = [
-  [ { text: HaifaEvents_fields[0]}, { text: HaifaEvents_fields[1]}],
-  [ { text: HaifaEvents_fields[2]}, { text: HaifaEvents_fields[3]}],
-  [ { text: HaifaEvents_fields[4]}, { text: HaifaEvents_fields[5]}],
+  [ { text: HaifaEventsInlinefields.party}, { text: HaifaEventsInlinefields.concert}],
+  [ { text: HaifaEventsInlinefields.standup}, { text: HaifaEventsInlinefields.lecture}],
+  [ { text: HaifaEventsInlinefields.sport}, { text: HaifaEventsInlinefields.other}],
   [{ text: mainMenu}]
 ]

@@ -69,3 +69,17 @@ const fieldCourses = {
   whatsApp: 17,
   spreadsheet: 18
 }
+
+/**
+ * object that saves the fields in the HaifaEvents spreadsheet
+ */
+//Mor_
+const HaifaEventsfields = {
+  event : 1, 
+  date : 2,
+  hour : 3,
+  location : 4, 
+  category : 5,
+  link : 6, 
+  image : 7
+}
