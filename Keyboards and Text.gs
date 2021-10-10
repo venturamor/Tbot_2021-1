@@ -49,6 +49,7 @@ var ContactEmail = "email";
 var ContactLinkdIn = "linkedin";
 var WantToTalk = "Anonymous talk with a student";
 var SFS = "Students Business "+	"\ud83d\udcb8";
+var HaifaEvents = "לאן יוצאים היום"; //Mor
 
 /**
  * function that makes an internal keyboard from the numbers in the spreadsheet. 
@@ -72,10 +73,11 @@ function makeKeyBoard(id, names, numbers){
  */ 
 var mainKeyBoard = [
   [{text: course }, { text: "My Courses \ud83d\udccc" }],
-  [{ text: SFS}/*, {text: "Glass Door"}*/,{ text: help }],
+  [{ text: SFS}/*, {text: "Glass Door"}*/,{ text: help }, { text: HaifaEvents}],
   [{ text: ride}, { text: fun} ,{ text: faculty}],
   [{ text: usefulLink}], //{text: add}],
   [{ text: feedback}],
+  [{ text: "Statistics"}],
   [{ text: About}]
 ]
 
@@ -264,4 +266,18 @@ var GDKeyBoard = [
   [{ text : "הכנס את המשכורת שלך"}],
   [{ text : "ברר משכורות"}],
   [{ text: mainMenu }]
+]
+
+var statsKeyboard = [
+  [{ text: "Users"}],
+  [{ text: mainMenu}]
+]
+
+//Mor
+var HaifaEvents_fields = ["Party","Concert / Show","Standup","Lecture","Sport Event","Other Fun"];
+var HaifaEventsBoard = [
+  [ { text: HaifaEvents_fields[0]}, { text: HaifaEvents_fields[1]}],
+  [ { text: HaifaEvents_fields[2]}, { text: HaifaEvents_fields[3]}],
+  [ { text: HaifaEvents_fields[4]}, { text: HaifaEvents_fields[5]}],
+  [{ text: mainMenu}]
 ]

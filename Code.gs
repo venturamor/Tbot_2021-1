@@ -50,6 +50,7 @@ function handleCallback(contents){
   var helpers = dataBaseEx.getSheetByName("helpers");
   var needsHelp = dataBaseEx.getSheetByName("needsHelp");
   var glassDoor = dataBaseEx.getSheetByName("glassDoor");
+  var haifaEventsSheet = dataBaseEx.getSheetByName("HaifaEvents"); //Mor_
 
   //get user information
   var id = contents.callback_query.from.id;
@@ -82,13 +83,13 @@ function handleCallback(contents){
 
   //get registers
   var cell = findUser(id, users);
+  if (cell == null) set(id, name);
   var row = cell.getRow(); 
   reg1 = users.getRange(row, fieldUsers.reg1).getValue();
   reg2 = users.getRange(row, fieldUsers.reg2).getValue();
   reg3 = users.getRange(row, fieldUsers.reg3).getValue();
   reg4 = users.getRange(row, fieldUsers.reg4).getValue();
   reg5 = users.getRange(row, fieldUsers.reg5).getValue();
-
   switch(reg1){
     case("help by number"): // helper is getting in contact with a student
       connectHelper(id, data, helpers, needsHelp)
@@ -111,6 +112,15 @@ function handleCallback(contents){
       }
       return
   }
+  //Searching a course
+  var courseFinder = courses.createTextFinder(data);
+  var currCourse = courseFinder.findNext();
+  while(currCourse !== null && currCourse.getColumn() !== 1){
+    currCourse = courseFinder.findNext();
+  }
+  if (currCourse){
+    sendOpt(id, name, courses, currCourse.getRow());
+  }
   sendKey(id, "Hi," + name + " \ud83d\udc4b, Welcome to Tbot \ud83d\udcd6", mainKeyBoard);  
   sendText(id, "To add a course to your list, simply search for it in the courses, and click 'Add to My List' button");
   reset(id)
@@ -131,6 +141,8 @@ function handleMessage(contents){
   var helpers = dataBaseEx.getSheetByName("helpers");
   var needsHelp = dataBaseEx.getSheetByName("needsHelp");
   var glassDoor = dataBaseEx.getSheetByName("glassDoor");
+  var haifaEventsSheet = dataBaseEx.getSheetByName("HaifaEvents"); //Mor_
+
   //get user data
   var id = contents.message.from.id;
   var name = contents.message.from.first_name;
@@ -138,9 +150,10 @@ function handleMessage(contents){
   
   // clean quotation marks in case it separated to parts - for example חדו"א    
   text = cleanQuotationMarks(text)
-
+  
   //find user and load his registers
-  var user = findUser(id, users)
+  var user = findUser(id, users);
+  if (user == null) set(id, name);
   var row = user.getRow(); 
   reg1 = users.getRange(row, fieldUsers.reg1).getValue();
   reg2 = users.getRange(row, fieldUsers.reg2).getValue();
@@ -153,7 +166,7 @@ function handleMessage(contents){
 
   //save the timestamp
   var date = Utilities.formatDate(new Date(), "GMT+3", "dd/MM/yyyy");
-  users.getRange(row, 3).setValue(date);
+  users.getRange(row, fieldUsers.lastSeen).setValue(date);
   
   //if simple command: execute
   var isDone = simpleText(id, name, text);
@@ -230,6 +243,23 @@ function handleMessage(contents){
     case(SFS):
       sendSFS(id, name, text, busi)
       return
+    case("Statistics"):
+      sendKey(id,"Which statistics do you want to see?", statsKeyboard);
+      return
+    case("Users"): //from stats
+      var allTime = statistics.getRange(2,2).getValue();
+      var monthly = statistics.getRange(3,2).getValue();
+      var weekly = statistics.getRange(4,2).getValue();
+      var daily = statistics.getRange(5,2).getValue();
+      sendText(id, "Users Statistics:\nAll Time Users: "+ allTime +
+                    "\nLast Month: "+ monthly + 
+                    "\nLast Week: " + weekly +
+                    "\nLast Day: " + daily);
+      return
+    //Mor
+    case (HaifaEvents):
+      sendHaifaEvents(id, name, text, haifaEventsSheet)
+      return true
   }
 
   switch(reg1){
@@ -271,6 +301,11 @@ function handleMessage(contents){
     case("Delete by Course Number"):
       deleteByNumber(id, name, users, courses)
       return
+    
+    //Mor_
+    case(HaifaEvents):
+      updateEventCategory(id, name, text, haifaEventsSheet);
+    //Mor_
     case(SFS):     
       var maxCol = busi.getRange(2, 2).getValue();
       var maxRow = busi.getRange(3, 2).getValue();
@@ -312,7 +347,24 @@ function handleMessage(contents){
         case("Description"):    //User gets here after sending the password
           busi.getRange(topicBase+topicCounter, topicCol-1).setValue(text);//set password
           sendText(id, "Your password is "+text+". Please send a description for your business");
-          oldSet(id, reg1, 0, "Contact");
+          var topic = reg3;
+          var currTopic = busi.createTextFinder(topic).findNext();
+          var topicCol = 0;
+          var topicCounter = 0;
+          //sendText(id, "curr topic: "+topic+" "+currTopic);
+          if (currTopic){
+           topicCol = currTopic.getColumn();
+           topicCounter = busi.getRange(2, topicCol-1).getValue(); 
+          }
+          var isExist = busi.createTextFinder(text).findNext();
+          if (text.length >= 34) sendText(id, "The name is too long. Please choose another name for your business");
+          else if (isExist) sendText(id, "This name is already taken. Please choose another name for your business");
+          else{
+            busi.getRange(topicBase+topicCounter+1, topicCol).setValue(text);//set name
+            sendText(id, text+" is initialized. Please send a password in order to be able to make changes in the future..");
+            busi.getRange(2, topicCol-1).setValue(topicCounter+1);//conter++
+            oldSet(id, reg1, 0, "Description");
+          }
           return;
 //    case("Location"){//User gets here after sending the description
 //       busi.getRange(topicBase+topicCounter, topicCol+1).setValue(text);//set description
@@ -347,6 +399,19 @@ function handleMessage(contents){
           return;
         case("Delete if Password"):
           deleteIfPass(text, busi)
+          var busiToDelete = busi.createTextFinder(text).findNext();
+          var busiRow = busiToDelete.getRow();
+          var busiCol = busiToDelete.getColumn();
+          var afteLastInCol = busi.getRange(1, busiCol).getValue();
+          var lastInCol = busi.getRange(afteLastInCol-1, busiCol).getValue();
+          var lastInColPass = busi.getRange(afteLastInCol-1, busiCol-1).getValue();
+          var lastInColDes = busi.getRange(afteLastInCol-1, busiCol+1).getValue();
+          var lastInColContact = busi.getRange(afteLastInCol-1, busiCol+3).getValue();
+          busi.getRange(busiRow, busiCol).setValue(lastInCol);
+          busi.getRange(busiRow-1, busiCol).setValue(lastInColPass);
+          busi.getRange(busiRow+1, busiCol).setValue(lastInColDes);
+          busi.getRange(busiRow+3, busiCol).setValue(lastInColContact);
+          busi.getRange(1, busiCol).setValue(afteLastInCol-1);
           return
         default:
           if (text == "Location"){
@@ -367,6 +432,6 @@ function handleMessage(contents){
           }
       }
   }
+  
   sendKey(id,"How may I help you?",mainKeyBoard);
 }
-
