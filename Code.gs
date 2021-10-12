@@ -20,6 +20,8 @@ function doGet(e) {
  * Execution of requestes of users (Main function)
  * @param {class} JSON 
  */
+
+
 function doPost(e){
   var contents = JSON.parse(e.postData.contents);
   var file;
@@ -77,7 +79,7 @@ function handleCallback(contents){
       return;
     case ("Delete A Course From My List"): 
       oldSet(id, data, name, 0);
-      sendText(id, "Please tap on a course in order to delete it from your list");
+      senText(id, "Please tap on a course in order to delete it from your list");
       return;
     }
 
@@ -147,6 +149,8 @@ function handleMessage(contents){
   var id = contents.message.from.id;
   var name = contents.message.from.first_name;
   var text = contents.message.text;
+  var mes_id = contents.message.id;
+
   
   // clean quotation marks in case it separated to parts - for example חדו"א    
   text = cleanQuotationMarks(text)
@@ -304,7 +308,21 @@ function handleMessage(contents){
     
     //Mor_
     case(HaifaEvents):
-      updateEventCategory(id, name, text, haifaEventsSheet);
+      if (reg2 == "Wait"){
+        // if Category is not set yet
+        updateEventCategory(id, name, text, haifaEventsSheet);
+      }
+      sendKey (id, "before while!"); //test
+      reg3 = users.getRange(row, fieldUsers.reg3).getValue();
+
+      while(reg3){
+        // callbacks from buttons in category instances
+        sendKey (id, "in while!"); //test
+        updateInstancesInCategory(id, name, text, mes_id, reg2,reg3, haifaEventsSheet);
+        reg3 = users.getRange(row, fieldUsers.reg3).getValue();
+
+      }
+     
     //Mor_
     case(SFS):     
       var maxCol = busi.getRange(2, 2).getValue();
@@ -432,6 +450,6 @@ function handleMessage(contents){
           }
       }
   }
-  
+
   sendKey(id,"How may I help you?",mainKeyBoard);
 }

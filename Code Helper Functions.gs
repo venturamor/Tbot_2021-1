@@ -1254,62 +1254,53 @@ function sendSFS(id, name, text, busi){
 }
 
 
-//Mor_
-/**
- * @param {Number} id
- * @param {String} name - user's name
- * @param {String} text - user's input
- * @param {Sheet}
- */
-function sendHaifaEvents(id, name, text, haifaEventsSheet){
-  sendKey(id, "Choose your way to have fun today from the list below", HaifaEventsBoard);
-  set(id, name, text, "Wait"); //reg2 == "Wait"
+// //Mor_
+// /**
+//  * @param {Number} id
+//  * @param {String} name - user's name
+//  * @param {String} text - user's input
+//  * @param {Sheet}
+//  */
+// function sendHaifaEvents(id, name, text, haifaEventsSheet){
+//   sendKey(id, "Choose your way to have fun today from the list below", HaifaEventsBoard);
+//   set(id, name, text, "Wait"); //reg2 == "Wait"
 
-}
+// }
 
-/**
- * 
- */
-function updateEventCategory(id, name, text, haifaEventsSheet){
-  set(id, name, null,text); //set only reg2
-  sendKey(id, "WooHoo!!! - it's " + text + " time!")
-  var req_category = getKeyByValue(HaifaEventsInlinefields, text);
-  var categoryCol = HaifaEventsfields.category;
+// /**
+//  * 
+//  */
+// function updateEventCategory(id, name, text, haifaEventsSheet){
+//   set(id, name, null,text); //set only reg2
+//   sendKey(id, "WooHoo!!! - it's " + text + " time!")
+//   var req_category = getKeyByValue(HaifaEventsInlinefields, text);
+//   var categoryCol = HaifaEventsfields.category;
 
-  // search in sheet
-  var textFinder = haifaEventsSheet.createTextFinder(req_category);
-  var categoryRows_list = textFinder.findAll();
-  var list_len = categoryRows_list.length;
-  if (list_len == 0){
-    sendKey(id, "There is no " + text + " soon :(")
-  }
-  else{
-    openRequestedPopup();
-  }
-}
+//   // search in sheet
+//   var textFinder = haifaEventsSheet.createTextFinder(req_category);
+//   var categoryRows_list = textFinder.findAll();
+//   var list_len = categoryRows_list.length;
+//   if (list_len == 0){
+//     sendKey(id, "There is no " + text + " soon :(")
+//   }
+//   else{
+//     // openRequestedPopup(categoryRows_list);
+//     sendKey(id, "There are some " + text + "events coming up!");
+//   }
+// }
 
-function openRequestedPopup() {
-  // var windowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-  // var windowObjectReference = Window.open("", "Events_WindowName", windowFeatures);
+// function openRequestedPopup(categoryRows_list) {
 
-  var selection = SpreadsheetApp.getActiveSheet().getActiveCell().getValue();
-  
-  var html = "<script>window.open('" + selection + "');google.script.host.close();</script>";
-  
-  var userInterface = HtmlService.createHtmlOutput(html);
-  
-  SpreadsheetApp.getUi().showModalDialog(userInterface, 'Open Tab');
-
-}
-/**
- * 
- */
-function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
-}
+// }
+// /**
+//  * 
+//  */
+// function getKeyByValue(object, value) {
+//   return Object.keys(object).find(key => object[key] === value);
+// }
 
 
-//Mor_
+// //Mor_
 
 /**
  * 
