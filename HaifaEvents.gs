@@ -15,8 +15,9 @@ function sendHaifaEvents(id, name, text, haifaEventsSheet){
 /**
  * 
  */
-function updateEventCategory(id, name, text, haifaEventsSheet){
-  set(id, name, null,text); //set only reg2
+function updateEventCategory(id, name, text, refreg_arr, haifaEventsSheet){
+  set(id, name, null,text); //set only reg2 in db
+  refreg_arr[2] = text;
   sendKey(id, "WooHoo!!! - it's " + text + " time!")
   var req_category = getKeyByValue(HaifaEventsInlinefields, text);
   var categoryCol = HaifaEventsfields.category;
@@ -34,7 +35,8 @@ function updateEventCategory(id, name, text, haifaEventsSheet){
     curr_row = textFinder.findNext().getRow(); 
     makeEventsInlineKeyBoard(id, curr_row,list_len, haifaEventsSheet);
     curr_instance_num = 1; // first event in category is displayed
-    set(id, name, null,null, curr_instance_num); //set only reg3
+    set(id, name, null,null, curr_instance_num); //set only reg3 in db
+    refreg_arr[3] = curr_instance_num;
 
   }
 }
@@ -43,18 +45,19 @@ function updateEventCategory(id, name, text, haifaEventsSheet){
 /**
  * function that work with the instances inside the category >> <<
  */
-function updateInstancesInCategory(id, name, text, mes_id, category, instance_num, haifaEventsSheet){
-  var req_category = getKeyByValue(HaifaEventsInlinefields, category);
+function updateInstancesInCategory(id, name, text, mes_id, refreg_arr, haifaEventsSheet){
+  var req_category = getKeyByValue(HaifaEventsInlinefields, refreg_arr[2]);
+  sendKey(id, req_category); //test
   var textFinder = haifaEventsSheet.createTextFinder(req_category);
   var num_tot_instances = textFinder.findAll().length;
 
-  sendKey(id, "instance: " + instance_num + " / " + num_tot_instances); // test
-
+  sendKey(id, "instance: " + refreg_arr[3] + " / " + num_tot_instances); // test
+  sendKey(id, text);
   switch(text){
     case (">>"):
     // TODO: set reg by proceeding in FindText results and ask if last
     // work with sendEditedText!
-      if (instance_num!=num_tot_instances){
+      if (refreg_arr[3]!=num_tot_instances){
 
       }
       else{

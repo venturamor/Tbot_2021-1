@@ -133,6 +133,7 @@ function handleCallback(contents){
  * Handle regular massage
  */
 function handleMessage(contents){
+  
   //open spreadsheets
   var dataBaseEx = SpreadsheetApp.openByUrl(dataBase);
   var courses = dataBaseEx.getSheetByName("courses");
@@ -164,6 +165,7 @@ function handleMessage(contents){
   reg3 = users.getRange(row, fieldUsers.reg3).getValue();
   reg4 = users.getRange(row, fieldUsers.reg4).getValue();
   reg5 = users.getRange(row, fieldUsers.reg5).getValue();
+  var refreg_arr = [reg1, reg2, reg3, reg4, reg5];   //Mor_ // pass by refrence
 
   //Boolean - true only if the user is authorized with the Technion email
   var authorized = users.getRange(row, fieldUsers.authorized).getValue();
@@ -310,16 +312,19 @@ function handleMessage(contents){
     case(HaifaEvents):
       if (reg2 == "Wait"){
         // if Category is not set yet
-        updateEventCategory(id, name, text, haifaEventsSheet);
+        updateEventCategory(id, name, text,refreg_arr, haifaEventsSheet);
       }
-      sendKey (id, "before while!"); //test
-      reg3 = users.getRange(row, fieldUsers.reg3).getValue();
-
-      while(reg3){
+      else {
+          switch(text){
+            case(">>"):
+              sendKey(id,">>");
+          }
+      }
+      // while(reg3){
+      if (refreg_arr[3]){ // for debug only
         // callbacks from buttons in category instances
-        sendKey (id, "in while!"); //test
-        updateInstancesInCategory(id, name, text, mes_id, reg2,reg3, haifaEventsSheet);
-        reg3 = users.getRange(row, fieldUsers.reg3).getValue();
+        // sendKey(id, String(refreg_arr[2])); //test
+        updateInstancesInCategory(id, name, text, mes_id, refreg_arr, haifaEventsSheet);
 
       }
      
@@ -451,5 +456,6 @@ function handleMessage(contents){
       }
   }
 
+  
   sendKey(id,"How may I help you?",mainKeyBoard);
 }
